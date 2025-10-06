@@ -1,0 +1,506 @@
+@use '../../styles/abstracts/variables' as *;
+
+.profileCard {
+  position: relative;
+  width: min($breakpoint-xl, 100%);
+  margin: 0 auto;
+  background: $bg-color;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+  animation: appearUp .28s ease both;
+}
+
+.cover {
+  height: 120px;
+  background: linear-gradient(135deg, $color-teal-1, $color-blue-1 55%, $color-purple-1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-md;
+  padding: $space-lg $space-lg $space-md;
+  margin-top: -48px;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+}
+
+.userAvatarXL {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  image-rendering: auto;
+  border: 4px solid $bg-color;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.displayName {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  color: $text-color;
+}
+
+.username {
+  margin-top: 2px;
+  color: $text-color-light;
+  font-size: $font-size-sm;
+}
+
+.actions {
+  display: flex;
+  gap: $space-sm;
+  flex-wrap: wrap;
+  margin-top: 40px;
+
+  button {
+    transition: transform 0.30s;
+    &:hover {
+      cursor: pointer;
+      transform: translateY(-6px);
+    }
+  }
+}
+
+.stats {
+  padding: 0 $space-lg $space-lg;
+  border-top: 1px dashed $border-color;
+}
+
+.kpis {
+  margin: $space-md 0 $space-md;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+  gap: $space-sm;
+  list-style: none;
+}
+
+.kpi {
+  background: #f7fbfa;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  padding: $space-sm $space-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  b {
+    font-size: 18px;
+    color: $text-color;
+  }
+
+  span {
+    color: $text-color-light;
+    font-size: $font-size-sm;
+  }
+}
+
+.userStatCardWrap {
+  margin-top: $space-sm;
+}
+
+.authContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: $space-lg 0;
+
+  .authCard {
+    display: flex;
+    align-items: center;
+    gap: $space-lg;
+    width: min(880px, 100%);
+    max-width: $breakpoint-lg;
+    background: linear-gradient(180deg, rgba($color-white, 0.98), $bg-color);
+    border: 1px solid $border-color;
+    border-radius: $radius-lg;
+    padding: $space-lg;
+    box-shadow: $shadow-lg;
+    transition: transform .22s ease, box-shadow .22s ease;
+    animation: appearUp .28s ease both;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.12);
+    }
+
+    .art {
+      flex: 0 0 88px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 88px;
+        height: 88px;
+        color: $primary-color;
+        filter: drop-shadow(0 4px 10px rgba(0,0,0,0.06));
+        border-radius: 50%;
+        box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    .authBody {
+      flex: 1;
+      min-width: 0;
+
+      .authTitle {
+        margin: 0 0 6px;
+        font-size: $font-size-xl;
+        color: $text-color;
+      }
+
+      .authSubtitle {
+        margin: 0 0 $space-sm;
+        color: $text-color-light;
+        font-size: $font-size-md;
+      }
+
+      .actionsRow {
+        display: flex;
+        gap: $space-sm;
+        align-items: center;
+        margin-top: $space-sm;
+
+        .authButton {
+          padding: $space-sm $space-md;
+          font-size: $font-size-md;
+          border-radius: $radius-md;
+          box-shadow: $shadow-sm;
+        }
+      }
+
+      .smallHint {
+        margin-top: $space-sm;
+        font-size: $font-size-sm;
+        color: $text-color-light;
+
+        .linkLike {
+          background: none;
+          border: none;
+          color: $primary-color;
+          cursor: pointer;
+          padding: 0;
+          font-weight: 600;
+          transition: transform 0.35s;
+          &:hover {
+            transform: translateY(-3px);
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes appearUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+button:focus-visible,
+.authCard button:focus-visible {
+  outline: 3px solid color-mix(in srgb, $primary-color 20%, $color-white);
+  outline-offset: 3px;
+}
+
+.avatarPreview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 12px;
+
+  &__img {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    object-fit: cover;
+    image-rendering: auto;
+    border: 2px solid $border-color;
+  }
+
+  &__hint {
+    opacity: 0.7;
+  }
+}
+
+.fileRow {
+  margin: 8px 0 12px;
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.fileBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-sm $space-md;
+  font-size: $font-size-md;
+  background: $secondary-color;
+  color: $text-color-inverse;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+  transition: filter .2s ease, transform .1s ease;
+
+  &:hover {
+    transition: transform 0.25s;
+    filter: brightness(1.1);
+    cursor: pointer;
+    transform: translateY(-7px);
+  }
+
+  &:active {
+    transform: scale(.98);
+  }
+}
+
+.authButton, .modalBtn, .updBtn {
+  transition: transform 0.35s;
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.error {
+  color: #bc0000;
+  font-size: $font-size-lg;
+  position: relative;
+  justify-self: center;
+  margin-top: 25vh;
+  text-align: center;
+  font-weight: 600;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+  justify-self: center;
+  margin-top: 15vh;
+
+  .loading {
+    font-size: $font-size-xl;
+    font-weight: 500;
+  }
+
+  .donut {
+    width: 32px;
+    height: 32px;
+    border: 5px solid transparent;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: donutAnim 1.5s linear infinite;
+  }
+}
+
+@keyframes donutAnim {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: $breakpoint-lg) {
+  .header {
+    padding: $space-md $space-md $space-sm;
+    gap: $space-sm;
+    margin-top: -32px;
+  }
+
+  .userAvatarXL {
+    width: 84px;
+    height: 84px;
+    border-width: 3px;
+  }
+
+  .displayName {
+    font-size: 24px;
+  }
+
+  .actions {
+    margin-top: 20px;
+  }
+
+  .kpis {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    gap: $space-sm;
+  }
+
+  .cover {
+    height: 110px;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: $space-sm;
+    margin-top: -30px;
+  }
+
+  .identity {
+    width: 100%;
+    align-items: center;
+    gap: $space-sm;
+  }
+
+  .nameBlock {
+    margin-top: 8px;
+  }
+
+  .displayName {
+    font-size: 22px;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: -30px;
+    gap: $space-sm;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    button {
+      padding: 8px 12px;
+    }
+  }
+
+  .kpis {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .avatarPreview {
+    &__img {
+      width: 96px;
+      height: 96px;
+    }
+  }
+
+  .cover {
+    height: 100px;
+  }
+
+  .error {
+    margin-top: 18vh;
+  }
+
+  .loadingContainer {
+    margin-top: 12vh;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .header {
+    align-items: center;
+    text-align: center;
+    padding: $space-md 12px $space-sm;
+    margin-top: -28px;
+  }
+
+  .identity {
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  .userAvatarXL {
+    width: 72px;
+    height: 72px;
+    border-width: 3px;
+  }
+
+  .nameBlock {
+    margin-top: 6px;
+  }
+
+  .displayName {
+    font-size: 20px;
+  }
+
+  .username {
+    font-size: $font-size-sm;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+    gap: $space-sm;
+    button {
+      width: 100%;
+      max-width: 260px;
+    }
+  }
+
+  .kpis {
+    grid-template-columns: 1fr;
+    gap: $space-sm;
+  }
+
+  .userStatCardWrap {
+    margin-top: $space-sm;
+  }
+
+  .avatarPreview {
+    &__img {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .cover {
+    height: 90px;
+  }
+
+  .error {
+    margin-top: 12vh;
+    font-size: $font-size-md;
+    padding: 0 12px;
+  }
+
+  .loadingContainer {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10vh;
+  }
+
+  .authContainer {
+    padding: $space-md 8px;
+    .authCard {
+      padding: $space-md;
+    }
+  }
+}
