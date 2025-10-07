@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TestPage from './pages/TestPage';
 import StatisticPage from './pages/StatisticPage';
-import MyTasksPage from './pages/MyTasksPage/MyTasksPage';
-import DelegatedTasksPage from './pages/DelegatedPage/DelegatedTasksPage';
-import CreateTaskPage from './pages/CreateTask/CreateTaskPage';
-import ProfilePage from './pages/ProfilePage/ProfilePage';
+import MyTasksPage from './pages/MyTasksPage';
+import DelegatedTasksPage from './pages/DelegatedTasksPage';
+import CreateTaskPage from './pages/CreateTaskPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   //Это главный компонент здесь подключаются глобальные компоненты реализуется роутинг
