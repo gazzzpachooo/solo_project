@@ -1,11 +1,11 @@
 import MainLayout from '../layouts/MainLayout'
 
-function DelegatedTasksPage() {
+function CreateArticlPage() {
   return (
     <MainLayout>
-        DelegatedTasksPage
+        CreateArticlPage
     </MainLayout>
   )
 }
 
-export default DelegatedTasksPage
+export default CreateArticlPage
