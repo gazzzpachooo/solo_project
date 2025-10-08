@@ -6,13 +6,10 @@ function Header() {
   const navigate = useNavigate()
 
   const navigationItems = [
-    { path: '/testPage', label: 'Тестовая страница' },
-    { path: '/', label: 'Статистика' },
-    { path: '/myTasks', label: 'Мои задачи' },
-    { path: '/delegatedTasks', label: 'Делегированные' },
-    { path: '/createTask', label: 'Создать задачу' },
-    { path: '/profile', label: 'Профиль' }
-  ]
+    { path: '/', label: 'Главная' },
+    { path: '/profile', label: 'Профиль' },
+    { path: '/newArticle', label: 'Создать статью' },
+  ];
 
   const handleNavigation = (path: string) => {
     navigate(path)

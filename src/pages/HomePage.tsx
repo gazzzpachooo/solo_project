@@ -1,11 +1,11 @@
 import MainLayout from '../layouts/MainLayout'
 
-function CreateTaskPage() {
+function HomePage() {
   return (
     <MainLayout>
-        CreateTaskPage
+        HomePage
     </MainLayout>
   )
 }
 
-export default CreateTaskPage
+export default HomePage
