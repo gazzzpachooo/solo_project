@@ -13,6 +13,12 @@ export interface Profile {
     ava: string;
 }
 
+export interface ArticleShort {
+    id: number;
+    title: string;
+    previewImg: string;
+}
+
 export interface Article {
     id: number;
     title: string;
