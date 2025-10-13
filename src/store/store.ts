@@ -1,13 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { profileSlice } from './slices/profileSlice';
 import { authSlice } from './slices/authSlice';
-
+import { articleSlice } from './slices/articleSlice';
 
 // Конфигурация Redux store с подключенными редьюсерами
 export const store = configureStore({
   reducer: {
       profile: profileSlice.reducer,
       auth: authSlice.reducer,
+      articles: articleSlice.reducer,
     // Когда реализуете слайсы добавите их 
   },
 });
