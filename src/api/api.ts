@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { UserProfile, Credentials, Profile  } from '../shared/Types/types';
+import type { UserProfile, Credentials, Profile, Article, ArticleShort, ArticleCreate  } from '../shared/Types/types';
 
 
 
@@ -55,8 +55,46 @@ export const articlesApi = {
     }
 }
 
+// --- Статьи ---
+export const CreatearticlesApi = {
+  // Получить список всех статей (кратко)
+  getArticles: async (): Promise<ArticleShort[]> => {
+    try {
+      const res = await axios_api.get<ArticleShort[]>('/articles');
+      return res.data;
+    } catch {
+      throw new Error('Ошибка при получении статей');
+    }
+  },
+
+  // ✅ Создать новую статью
+  createArticle: async (creds: Credentials, article: ArticleCreate): Promise<Article> => {
+    try {
+      const res = await axios_api.post<Article>(
+        '/createArticle',
+        article,
+        {
+          auth: { username: creds.username, password: creds.password },
+        }
+      );
+      return res.data;
+    } catch (error: any) {
+  console.error("Ошибка при создании статьи:", error.response?.data || error.message);
+  throw new Error("Ошибка при создании статьи");
+}
+
+  },
+
+  // (опционально) Получить статью по id
+  getArticleById: async (id: number): Promise<Article> => {
+    const res = await axios_api.get<Article>(`/articles/${id}`);
+    return res.data;
+  },
+};
+
 export const api = {
     articlesApi,
     profileApi,
     checkAuth,
+    CreatearticlesApi
 }
