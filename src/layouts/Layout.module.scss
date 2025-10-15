@@ -4,6 +4,7 @@
     width: 100%;
     border-bottom: 3px solid $primary-color;
     height: 100px;
+    background-color: $bg-color;
     &__content {
         width: $layout-size;
         margin: 0 auto;
@@ -18,6 +19,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: $second-bg-color;
+  color: $text-color;
 }
 
 .content {
@@ -30,7 +33,7 @@
   width: 100%;
   border-top: 3px solid $primary-color;
   height: 200px;
-
+  background-color: $bg-color;
   &__content {
     width: $layout-size;
     margin: 0 auto;

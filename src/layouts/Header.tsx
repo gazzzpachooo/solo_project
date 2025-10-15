@@ -22,7 +22,7 @@ function Header() {
           <Button
             key={item.path}
             onClick={() => handleNavigation(item.path)}
-            variant="secondary"
+            variant="primary"
           >
             {item.label}
           </Button>

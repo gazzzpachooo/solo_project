@@ -4,9 +4,12 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../store/store";
 import { fetchArticles, selectArticles, selectArticlesLoading, selectArticlesError } from "../store/slices/articleSlice";
+import { useNavigate } from 'react-router-dom';
+import s from './HomePage.module.scss'
 
 export default function ArticlesPage() {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const articles = useSelector(selectArticles);
   const loading = useSelector(selectArticlesLoading);
   const error = useSelector(selectArticlesError);
@@ -20,7 +23,7 @@ export default function ArticlesPage() {
 
   return (
     <MainLayout>
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div>
       <h2>Все статьи</h2>
       {articles.length === 0 && <p>Статей нет</p>}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
@@ -32,6 +35,20 @@ export default function ArticlesPage() {
               style={{ width: "100%", height: 120, objectFit: "cover" }}
             />
             <h4>{article.title}</h4>
+             <button
+                onClick={() => navigate(`/article/${article.id}`)}
+                style={{
+                  marginTop: 8,
+                  padding: '6px 12px',
+                  backgroundColor: '#28a745',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 4,
+                  cursor: 'pointer'
+                }}
+              >
+                Подробнее
+              </button>
           </div>
         ))}
       </div>

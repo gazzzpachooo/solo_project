@@ -15,6 +15,10 @@ import type {
   MainInfo,
 } from "../shared/Types/types";
 import MainLayout from "../layouts/MainLayout";
+import Input from "../shared/ui/Input/Input";
+import Button from "../shared/ui/Button/Button";
+import Textarea from "../shared/ui/Textarea/Textarea";
+import Select from "../shared/ui/Select/Select";
 
 interface OtherField {
   key: string;
@@ -163,15 +167,16 @@ export default function NewArticlePage() {
         {loading && <p>Загрузка...</p>}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <input
+          <Input
             type="text"
             placeholder="Заголовок"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
+          
 
-          <input
+          <Input
             type="text"
             placeholder="URL превью изображения"
             value={previewImg}
@@ -191,7 +196,7 @@ export default function NewArticlePage() {
               ["weight", "Вес"],
             ] as [keyof MainInfo, string][]
           ).map(([key, label]) => (
-            <input
+            <Input
               key={key}
               type={key === "age" ? "number" : "text"}
               placeholder={label}
@@ -208,43 +213,47 @@ export default function NewArticlePage() {
           <h5>Дополнительные поля (other)</h5>
           {otherFields.map((fld, i) => (
             <div key={i} style={{ display: "flex", gap: 8 }}>
-              <input
+              <Input
                 type="text"
                 placeholder="Ключ"
                 value={fld.key}
                 onChange={(e) => handleOtherChange(i, "key", e.target.value)}
                 required
               />
-              <input
+              
+              <Input
                 type="text"
                 placeholder="Значение"
                 value={fld.value}
                 onChange={(e) => handleOtherChange(i, "value", e.target.value)}
                 required
               />
-              <button type="button" onClick={() => handleRemoveOther(i)}>
+              <Button type="button" onClick={() => handleRemoveOther(i)}>
                 Удалить
-              </button>
+              </Button>
             </div>
           ))}
-          <button type="button" onClick={handleAddOther}>
+          <Button type="button" onClick={handleAddOther}>
             Добавить поле other
-          </button>
+          </Button>
 
           <h4>Добавить блок контента</h4>
-          <select
+          <Select
             value={blockType}
-            onChange={(e) => setBlockType(e.target.value)}
-            required
+            onChange={(val) => setBlockType(val)}
+            required={true}
+            options={[  
+              { value: "", label: "Выберите тип" },
+              { value: "h1", label: "h1" },
+              { value: "h2", label: "h2" },
+              { value: "p", label: "p" },
+              { value: "ul", label: "ul" },
+              { value: "ol", label: "ol" },
+              { value: "img", label: "img" },
+            ]}
           >
-            <option value="">Выберите тип</option>
-            <option value="h1">h1</option>
-            <option value="h2">h2</option>
-            <option value="p">p</option>
-            <option value="ul">ul</option>
-            <option value="ol">ol</option>
-            <option value="img">img</option>
-          </select>
+          </Select>
+          
 
           {/* Для списков */}
           {(blockType === "ul" || blockType === "ol") && (
@@ -252,24 +261,25 @@ export default function NewArticlePage() {
               <h6>Элементы списка</h6>
               {listItems.map((item, idx) => (
                 <div key={idx} style={{ display: "flex", gap: 8 }}>
-                  <input
+                  <Input
                     type="text"
                     placeholder="Текст элемента"
                     value={item}
                     onChange={(e) => handleListItemChange(idx, e.target.value)}
                     required
                   />
+                  
                 </div>
               ))}
-              <button type="button" onClick={handleAddListItem}>
+              <Button type="button" onClick={handleAddListItem}>
                 Добавить элемент списка
-              </button>
+              </Button>
             </div>
           )}
 
           {/* Для всех остальных */}
           {blockType && blockType !== "ul" && blockType !== "ol" && (
-            <textarea
+            <Textarea
               placeholder="Содержимое блока"
               value={blockContent}
               onChange={(e) => setBlockContent(e.target.value)}
@@ -277,17 +287,17 @@ export default function NewArticlePage() {
             />
           )}
 
-          <button
+          <Button
             type="button"
             disabled={!blockType || ((blockType !== "ul" && !blockContent) || (["ul","ol"].includes(blockType) && listItems.length === 0))}
             onClick={handleAddBlock}
           >
             Добавить блок
-          </button>
+          </Button>
 
-          <button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading}>
             Создать статью
-          </button>
+          </Button>
         </form>
 
         {mainContent.length > 0 && (
