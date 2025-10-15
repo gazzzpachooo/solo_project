@@ -17,12 +17,24 @@
 
 .primary {
   background-color: $primary-color;
+  cursor: pointer;
+  border-radius: 3px;
+  border: none;
+  padding: 5px 10px;
 }
 
 .secondary {
   background-color: $secondary-color;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  padding: 5px 10px;
 }
 
 .danger {
   background-color: $danger-color;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+  padding: 5px 10px;
 }
