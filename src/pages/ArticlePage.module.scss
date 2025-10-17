@@ -1,0 +1,91 @@
+@use '../styles/abstracts/variables' as *;
+
+.articleDetail {
+  max-width: $layout-size;
+  margin: $margin-lg auto;
+  padding: $padding-md;
+  background-color: $second-bg-color;
+  border-radius: $radius-md;
+  box-shadow: $shadow-md;
+}
+
+.articleTitle {
+  font-size: $font-size-xl;
+  color: $primary-color;
+  margin-bottom: $margin-sm;
+}
+
+.articleAuthor {
+  font-size: $font-size-md;
+  color: $secondary-color;
+  margin-bottom: $margin-md;
+}
+
+.articlePreview {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  margin-bottom: $margin-lg;
+}
+
+.section {
+  margin-top: $margin-lg;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  color: $primary-color;
+  border-bottom: 2px solid $border-color;
+  padding-bottom: $padding-sm;
+  margin-bottom: $margin-md;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: $space-md;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoLabel {
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: $text-color-light;
+  margin-bottom: $space-xs;
+}
+
+.infoValue {
+  font-size: $font-size-md;
+  color: $text-color;
+}
+
+.infoImage {
+  width: 100%;
+  height: auto;
+  border-radius: $radius-sm;
+}
+
+.articleContent {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.message {
+  text-align: center;
+  margin-top: $margin-lg;
+  font-size: $font-size-md;
+  color: $text-color-light;
+}
+
+.messageError {
+  text-align: center;
+  margin-top: $margin-lg;
+  font-size: $font-size-md;
+  color: $danger-color;
+}

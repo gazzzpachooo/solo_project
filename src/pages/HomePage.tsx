@@ -6,6 +6,7 @@ import type { AppDispatch } from "../store/store";
 import { fetchArticles, selectArticles, selectArticlesLoading, selectArticlesError } from "../store/slices/articleSlice";
 import { useNavigate } from 'react-router-dom';
 import s from './HomePage.module.scss'
+import Button from '../shared/ui/Button/Button';
 
 export default function ArticlesPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,29 +27,21 @@ export default function ArticlesPage() {
       <div>
       <h2>Все статьи</h2>
       {articles.length === 0 && <p>Статей нет</p>}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
+      <div className={s.articleList}>
         {articles.map((article) => (
-          <div key={article.id} style={{ border: "1px solid #ccc", padding: 10, width: 200 }}>
+          <div key={article.id} className={s.articleItem}>
             <img
               src={article.previewImg}
               alt={article.title}
-              style={{ width: "100%", height: 120, objectFit: "cover" }}
+              className={s.articleImage}
             />
             <h4>{article.title}</h4>
-             <button
+             <Button
                 onClick={() => navigate(`/article/${article.id}`)}
-                style={{
-                  marginTop: 8,
-                  padding: '6px 12px',
-                  backgroundColor: '#28a745',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 4,
-                  cursor: 'pointer'
-                }}
+                variant='secondary'
               >
                 Подробнее
-              </button>
+              </Button>
           </div>
         ))}
       </div>
