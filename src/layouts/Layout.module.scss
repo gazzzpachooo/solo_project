@@ -3,15 +3,16 @@
 .header {
     width: 100%;
     border-bottom: 3px solid $primary-color;
-    height: 100px;
+    height: 75px;
     background-color: $bg-color;
     &__content {
         width: $layout-size;
-        margin: 0 auto;
+        
         display: flex;
         height: 100%;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
+        gap: 20px;
     }
 }
 

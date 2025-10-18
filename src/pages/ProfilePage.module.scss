@@ -43,6 +43,9 @@
 // Блок с пользовательскими данными
 .userInfo {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   .avatar {
     width: 120px;
     height: 120px;
@@ -131,4 +134,10 @@
 
 .error {
   color: $danger-color;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
 }

@@ -12,7 +12,9 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/newArticle" element={<CreateArticlPage />} />
+        <Route path="/newArticle/:articleId" element={<CreateArticlPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/edit" element={<ProfilePage />} />
         <Route path="/article/:id" element={<ArticlePage />} />
       </Routes>
     </BrowserRouter>

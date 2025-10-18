@@ -1,4 +1,4 @@
-@use '../styles/abstracts/variables' as *;
+@use "../styles/abstracts/variables" as *;
 
 .articleDetail {
   max-width: $layout-size;
@@ -23,7 +23,7 @@
 
 .articlePreview {
   width: 100%;
-  max-height: 400px;
+  // max-height: 400px;
   object-fit: cover;
   border-radius: $radius-sm;
   margin-bottom: $margin-lg;
@@ -88,4 +88,10 @@
   margin-top: $margin-lg;
   font-size: $font-size-md;
   color: $danger-color;
+}
+
+.backButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: $margin-lg;
 }
