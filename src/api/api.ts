@@ -57,39 +57,53 @@ export const articlesApi = {
 
 // --- Статьи ---
 export const CreatearticlesApi = {
+
+  getMyArticles: async (creds: Credentials): Promise<ArticleShort[]> => {
+    const res = await axios_api.get<ArticleShort[]>('/myArticles', {
+      auth: { username: creds.username, password: creds.password },
+    });
+    return res.data;
+  },
+
+  deleteArticle: async (creds: Credentials, id: number): Promise<void> => {
+    await axios_api.delete(`/articles/${id}`, {
+      auth: { username: creds.username, password: creds.password },
+    });
+  },
+
   // Получить список всех статей (кратко)
   getArticles: async (): Promise<ArticleShort[]> => {
     try {
       const res = await axios_api.get<ArticleShort[]>('/articles');
+        return res.data;
+      } catch {
+        throw new Error('Ошибка при получении статей');
+      }
+    },
+
+    // Создать новую статью
+    createArticle: async (creds: Credentials, article: ArticleCreate): Promise<Article> => {
+      try {
+        const res = await axios_api.post<Article>(
+          '/createArticle',
+          article,
+          {
+            auth: { username: creds.username, password: creds.password },
+          }
+        );
+        return res.data;
+      } catch (error: any) {
+    console.error("Ошибка при создании статьи:", error.response?.data || error.message);
+    throw new Error("Ошибка при создании статьи");
+  }
+
+    },
+
+    // Получить статью по id
+    getArticleById: async (id: number): Promise<Article> => {
+      const res = await axios_api.get<Article>(`/articles/${id}`);
       return res.data;
-    } catch {
-      throw new Error('Ошибка при получении статей');
-    }
-  },
-
-  // ✅ Создать новую статью
-  createArticle: async (creds: Credentials, article: ArticleCreate): Promise<Article> => {
-    try {
-      const res = await axios_api.post<Article>(
-        '/createArticle',
-        article,
-        {
-          auth: { username: creds.username, password: creds.password },
-        }
-      );
-      return res.data;
-    } catch (error: any) {
-  console.error("Ошибка при создании статьи:", error.response?.data || error.message);
-  throw new Error("Ошибка при создании статьи");
-}
-
-  },
-
-  // (опционально) Получить статью по id
-  getArticleById: async (id: number): Promise<Article> => {
-    const res = await axios_api.get<Article>(`/articles/${id}`);
-    return res.data;
-  },
+    },
 };
 
 export const api = {

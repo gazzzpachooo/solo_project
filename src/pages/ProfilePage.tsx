@@ -1,153 +1,149 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import {
-  login,
-  logOut,
-  selectIsAuthenticated,
-  selectAuthError,
-  selectAuthLoading,
-} from "../store/slices/authSlice";
+import { api } from "../api/api";
+import { login, logOut, selectAuth, selectIsAuthenticated } from "../store/slices/authSlice";
 import {
   fetchProfile,
-  updateProfile,
   selectProfile,
   selectProfileError,
   selectProfileLoading,
 } from "../store/slices/profileSlice";
 import { useAppDispatch, useAppSelector } from "../store/store";
-import Button from "../shared/ui/Button/Button";
-import Input from "../shared/ui/Input/Input";
+import type { ArticleShort, Credentials } from "../shared/Types/types";
+import styles from "./ProfilePage.module.scss";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // 1) Авторизация
+  // 1) Данные аутентификации и профиль
   const isAuth = useAppSelector(selectIsAuthenticated);
-  const authLoading = useAppSelector(selectAuthLoading);
-  const authError = useAppSelector(selectAuthError);
-
-  // 2) Профиль
+  const { username, password } = useAppSelector(selectAuth) as Credentials;
   const profile = useAppSelector(selectProfile);
   const profileLoading = useAppSelector(selectProfileLoading);
   const profileError = useAppSelector(selectProfileError);
 
-  // Локальные state для форм
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [editName, setEditName] = useState("");
-  const [editAva, setEditAva] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  // 2) Список «мои статьи»
+  const [articles, setArticles] = useState<ArticleShort[]>([]);
+  const [artLoading, setArtLoading] = useState(false);
+  const [artError, setArtError] = useState<string | null>(null);
 
-  // После логина — сразу дергаем профиль
+  // Формы входа
+  const [loginName, setLoginName] = useState("");
+  const [loginPass, setLoginPass] = useState("");
+
   useEffect(() => {
     if (isAuth) {
       dispatch(fetchProfile());
+      loadMyArticles();
     }
   }, [dispatch, isAuth]);
 
-  // Обработчики
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await dispatch(login({ username, password })).unwrap();
+    await dispatch(login({ username: loginName, password: loginPass })).unwrap();
   };
 
   const handleLogout = () => {
     dispatch(logOut());
-    navigate("/");          // редирект на главную после логаута
+    navigate("/");
   };
 
-  const handleEdit = () => {
-    if (profile) {
-      setEditName(profile.name);
-      setEditAva(profile.ava);
-      setIsEditing(true);
+  const loadMyArticles = async () => {
+    setArtLoading(true);
+    setArtError(null);
+    try {
+      const myArts = await api.CreatearticlesApi.getMyArticles({ username, password });
+      setArticles(myArts);
+    } catch {
+      setArtError("Не удалось загрузить ваши статьи");
+    } finally {
+      setArtLoading(false);
     }
   };
 
-  const handleSave = async () => {
-    await dispatch(updateProfile({ name: editName, ava: editAva })).unwrap();
-    setIsEditing(false);
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("Удалить статью?")) return;
+    try {
+      await api.CreatearticlesApi.deleteArticle({ username, password }, id);
+      setArticles((prev) => prev.filter((a) => a.id !== id));
+    } catch {
+      alert("Ошибка при удалении статьи");
+    }
+  };
+
+  const handleEdit = (id: number) => {
+    navigate(`/newArticle?editId=${id}`); 
   };
 
   return (
     <MainLayout>
-      <div style={{ maxWidth: 500, margin: "50px auto", textAlign: "center" }}>
-        <h2>Профиль пользователя</h2>
-
-        {/* 1) Форма входа */}
+      <div className={styles.profileContainer}>
         {!isAuth && (
-          <form
-            onSubmit={handleLogin}
-            style={{ display: "flex", flexDirection: "column", gap: 12 }}
-          >
-            {authError && <p style={{ color: "red" }}>{authError}</p>}
-            <Input
+          <form className={styles.loginForm} onSubmit={handleLogin}>
+            <h2>Вход</h2>
+            <input
               type="text"
               placeholder="Логин"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={loginName}
+              onChange={(e) => setLoginName(e.target.value)}
               required
             />
-            <Input
+            <input
               type="password"
               placeholder="Пароль"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={loginPass}
+              onChange={(e) => setLoginPass(e.target.value)}
               required
             />
-            <Button type="submit" disabled={authLoading}>
-              {authLoading ? "Вход..." : "Войти"}
-            </Button>
+            <button type="submit">Войти</button>
           </form>
         )}
 
-        {/* 2) Профиль и редактирование */}
         {isAuth && (
           <>
-            {(profileLoading || profile === null) && (
-              <p>Загрузка профиля...</p>
-            )}
-            {profileError && (
-              <p style={{ color: "red" }}>{profileError}</p>
-            )}
+            <div className={styles.userInfo}>
+              {profileLoading && <p>Загрузка профиля...</p>}
+              {profileError && <p className={styles.error}>{profileError}</p>}
 
-            {profile && !isEditing && (
-              <div style={{ marginTop: 20 }}>
-                <img
-                  src={profile.ava}
-                  alt="avatar"
-                  width={120}
-                  height={120}
-                  style={{ borderRadius: "50%" }}
-                />
-                <h3>{profile.name}</h3>
-                <Button onClick={handleEdit}>Редактировать</Button>
-                <Button onClick={handleLogout}>Выйти</Button>
-              </div>
-            )}
+              {profile && (
+                <>
+                  <img src={profile.ava} alt="Avatar" className={styles.avatar} />
+                  <h2 className={styles.userName}>{profile.name}</h2>
+                  <div className={styles.buttonGroup}>
+                    <button onClick={() => navigate("/profile/edit")}>Редактировать профиль</button>
+                    <button onClick={handleLogout}>Выйти</button>
+                  </div>
+                </>
+              )}
+            </div>
 
-            {profile && isEditing && (
-              <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-                <Input
-                  type="text"
-                  placeholder="Имя"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="URL аватара"
-                  value={editAva}
-                  onChange={(e) => setEditAva(e.target.value)}
-                />
-                <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                  <Button onClick={handleSave}>Сохранить</Button>
-                  <Button onClick={() => setIsEditing(false)}>Отмена</Button>
-                </div>
-              </div>
-            )}
+            <div className={styles.stats}>
+              <h3>Статистика</h3>
+              {artLoading ? (
+                <p>Загрузка...</p>
+              ) : artError ? (
+                <p className={styles.error}>{artError}</p>
+              ) : (
+                <p>Написано статей: {articles.length}</p>
+              )}
+            </div>
+
+            <div className={styles.myArticles}>
+              <h3>Мои статьи</h3>
+              <ul className={styles.articleList}>
+                {articles.map((a) => (
+                  <li key={a.id} className={styles.articleItem}>
+                    <span className={styles.articleTitle}>{a.title}</span>
+                    <div className={styles.articleActions}>
+                      <button onClick={() => handleEdit(a.id)}>Редактировать</button>
+                      <button onClick={() => handleDelete(a.id)}>Удалить</button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </>
         )}
       </div>
