@@ -1,58 +1,134 @@
-@import '../styles/abstracts/variables';
+@use '../styles/abstracts/variables' as *;
 
-.container {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 24px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+.profileContainer {
+  max-width: $layout-size;
+  margin: $margin-lg auto;
+  padding: $padding-md;
+  background-color: $second-bg-color;
+  border-radius: $radius-md;
+  box-shadow: $shadow-md;
+  color: $text-color;
 }
 
-.title {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.form {
+// Форма входа
+.loginForm {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $space-sm;
+
+  h2 {
+    color: $primary-color;
+    margin-bottom: $space-sm;
+  }
+
+  input {
+    padding: $space-xs;
+    border: 1px solid $border-color;
+    border-radius: $radius-sm;
+    background: $bg-color;
+    color: $text-color;
+  }
+
+  button {
+    padding: $space-sm $space-md;
+    border: none;
+    border-radius: $radius-sm;
+    background-color: $primary-color;
+    color: $bg-color;
+    cursor: pointer;
+  }
 }
 
-.input {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid $secondary-color;
+// Блок с пользовательскими данными
+.userInfo {
+  text-align: center;
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: $space-md;
+  }
+  .userName {
+    font-size: $font-size-xl;
+    color: $primary-color;
+    margin-bottom: $space-sm;
+  }
+  .buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: $space-sm;
+    button {
+      padding: $space-xs $space-sm;
+      border: none;
+      border-radius: $radius-sm;
+      background-color: $secondary-color;
+      color: $text-color;
+      cursor: pointer;
+    }
+  }
 }
 
-.button {
-  padding: 10px;
-  border-radius: 6px;
-  background: $primary-color; // Corrected variable name
-  color: #fff;
-  border: none;
-  font-weight: 600;
+// Статистика
+.stats {
+  margin-top: $margin-lg;
+  h3 {
+    color: $primary-color;
+    margin-bottom: $space-xs;
+  }
+  p {
+    font-size: $font-size-md;
+  }
 }
 
-.buttonLogout {
-  margin-top: 20px;
-  padding: 8px;
-  border-radius: 6px;
-  background: $danger-color;
-  color: #fff;
-  border: none;
-  font-weight: 600;
-}
+// Список моих статей
+.myArticles {
+  margin-top: $margin-lg;
+  h3 {
+    color: $primary-color;
+    margin-bottom: $space-sm;
+  }
+  .articleList {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+  .articleItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $bg-color;
+    padding: $space-sm;
+    border-radius: $radius-sm;
+    border: 1px solid $border-color;
 
-.avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  margin-bottom: 16px;
+    .articleTitle {
+      color: $text-color;
+      font-size: $font-size-md;
+    }
+    .articleActions {
+      display: flex;
+      gap: $space-xs;
+      button {
+        padding: $space-xs $space-sm;
+        border: none;
+        border-radius: $radius-sm;
+        cursor: pointer;
+      }
+      button:first-child {
+        background: $success-color;
+        color: $bg-color;
+      }
+      button:last-child {
+        background: $danger-color;
+        color: $text-color;
+      }
+    }
+  }
 }
 
 .error {
   color: $danger-color;
-  text-align: center;
 }
