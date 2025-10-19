@@ -1,4 +1,5 @@
-import { useState } from "react";
+// src/pages/NewArticlePage.tsx
+import  { useState } from "react";
 import type { FormEvent } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +9,10 @@ import {
   selectNewArticleLoading,
   selectNewArticleError,
 } from "../store/slices/newArticleSlice";
-import { selectIsAuthenticated, selectAuth } from "../store/slices/authSlice";
+import {
+  selectIsAuthenticated,
+  selectAuth,
+} from "../store/slices/authSlice";
 import type {
   ArticleCreate,
   ContentBlock,
@@ -16,9 +20,9 @@ import type {
 } from "../shared/Types/types";
 import MainLayout from "../layouts/MainLayout";
 import Input from "../shared/ui/Input/Input";
-import Button from "../shared/ui/Button/Button";
 import Textarea from "../shared/ui/Textarea/Textarea";
 import Select from "../shared/ui/Select/Select";
+import Button from "../shared/ui/Button/Button";
 
 interface OtherField {
   key: string;
@@ -31,15 +35,12 @@ export default function NewArticlePage() {
 
   const isAuth = useSelector(selectIsAuthenticated);
   const { username, password } = useSelector(selectAuth);
-
   const loading = useSelector(selectNewArticleLoading);
   const error = useSelector(selectNewArticleError);
 
-  // Основные поля
+  // form state
   const [title, setTitle] = useState("");
   const [previewImg, setPreviewImg] = useState("");
-
-  // mainInfo
   const [mainInfo, setMainInfo] = useState<MainInfo>({
     name: "",
     image: "",
@@ -51,14 +52,10 @@ export default function NewArticlePage() {
     weight: "",
     other: {},
   });
-
-  // динамические поля other
   const [otherFields, setOtherFields] = useState<OtherField[]>([]);
-
-  // контент-блоки
   const [mainContent, setMainContent] = useState<ContentBlock[]>([]);
   const [blockType, setBlockType] = useState<ContentBlock["type"]>("");
-  const [blockContent, setBlockContent] = useState<string>("");
+  const [blockContent, setBlockContent] = useState("");
   const [listItems, setListItems] = useState<string[]>([]);
 
   if (!isAuth) {
@@ -66,21 +63,17 @@ export default function NewArticlePage() {
       <MainLayout>
         <div style={{ textAlign: "center", marginTop: 40 }}>
           <h2>Доступ запрещён</h2>
-          <p>Чтобы создать статью, пожалуйста, войдите в систему.</p>
+          <p>Чтобы создавать статью, войдите в систему.</p>
         </div>
       </MainLayout>
     );
   }
 
-  // Добавить поле other
-  const handleAddOther = () => {
+  // other-fields handlers
+  const handleAddOther = () =>
     setOtherFields([...otherFields, { key: "", value: "" }]);
-  };
-
-  const handleRemoveOther = (idx: number) => {
+  const handleRemoveOther = (idx: number) =>
     setOtherFields(otherFields.filter((_, i) => i !== idx));
-  };
-
   const handleOtherChange = (
     idx: number,
     field: keyof OtherField,
@@ -91,47 +84,35 @@ export default function NewArticlePage() {
     setOtherFields(copy);
   };
 
-  // Добавить блок контента
-  const handleAddBlock = () => {
-    let content: any = blockContent;
-    if (blockType === "ul" || blockType === "ol") {
-      content = listItems.filter((item) => item.trim() !== "").map((text) => ({
-        type: "li",
-        content: text,
-      }));
-    }
-
-    setMainContent([
-      ...mainContent,
-      { type: blockType, content },
-    ]);
-    // сброс
-    setBlockType("");
-    setBlockContent("");
-    setListItems([]);
-  };
-
-  // Добавить элемент списка при blockType = ul|ol
-  const handleAddListItem = () => {
+  // content-block handlers
+  const handleAddListItem = () =>
     setListItems([...listItems, ""]);
-  };
-
   const handleListItemChange = (idx: number, val: string) => {
     const copy = [...listItems];
     copy[idx] = val;
     setListItems(copy);
   };
+  const handleAddBlock = () => {
+    let content: any = blockContent;
+    if (blockType === "ul" || blockType === "ol") {
+      content = listItems
+        .filter((item) => item.trim() !== "")
+        .map((text) => ({ type: "li", content: text }));
+    }
+    setMainContent([...mainContent, { type: blockType, content }]);
+    setBlockType("");
+    setBlockContent("");
+    setListItems([]);
+  };
 
-  // Отправка формы
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // Сформируем other в mainInfo
+    // build other object
     const otherObj: Record<string, any> = {};
     otherFields.forEach(({ key, value }) => {
       if (key.trim()) otherObj[key] = value;
     });
-
     const fullInfo: MainInfo = {
       ...mainInfo,
       other: Object.keys(otherObj).length ? otherObj : undefined,
@@ -145,14 +126,13 @@ export default function NewArticlePage() {
     };
 
     try {
-      const newArticle = await dispatch(
+      const created = await dispatch(
         createArticleThunk({
           creds: { username, password },
           articleData,
         })
       ).unwrap();
-
-      navigate(`/article/${newArticle.id}`);
+      navigate(`/article/${created.id}`);
     } catch {
       alert("Не удалось создать статью");
     }
@@ -162,11 +142,13 @@ export default function NewArticlePage() {
     <MainLayout>
       <div style={{ maxWidth: 700, margin: "40px auto" }}>
         <h2>Создать новую статью</h2>
-
         {error && <p style={{ color: "red" }}>{error}</p>}
         {loading && <p>Загрузка...</p>}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: 12 }}
+        >
           <Input
             type="text"
             placeholder="Заголовок"
@@ -174,7 +156,6 @@ export default function NewArticlePage() {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
-          
 
           <Input
             type="text"
@@ -204,7 +185,10 @@ export default function NewArticlePage() {
               onChange={(e) =>
                 setMainInfo({
                   ...mainInfo,
-                  [key]: key === "age" ? Number(e.target.value) : e.target.value,
+                  [key]:
+                    key === "age"
+                      ? Number(e.target.value)
+                      : e.target.value,
                 })
               }
             />
@@ -217,18 +201,24 @@ export default function NewArticlePage() {
                 type="text"
                 placeholder="Ключ"
                 value={fld.key}
-                onChange={(e) => handleOtherChange(i, "key", e.target.value)}
+                onChange={(e) =>
+                  handleOtherChange(i, "key", e.target.value)
+                }
                 required
               />
-              
               <Input
                 type="text"
                 placeholder="Значение"
                 value={fld.value}
-                onChange={(e) => handleOtherChange(i, "value", e.target.value)}
+                onChange={(e) =>
+                  handleOtherChange(i, "value", e.target.value)
+                }
                 required
               />
-              <Button type="button" onClick={() => handleRemoveOther(i)}>
+              <Button
+                type="button"
+                onClick={() => handleRemoveOther(i)}
+              >
                 Удалить
               </Button>
             </div>
@@ -237,25 +227,23 @@ export default function NewArticlePage() {
             Добавить поле other
           </Button>
 
+          {/* Добавление блоков контента */}
           <h4>Добавить блок контента</h4>
           <Select
             value={blockType}
             onChange={(val) => setBlockType(val)}
-            required={true}
-            options={[  
+            required
+            options={[
               { value: "", label: "Выберите тип" },
-              { value: "h1", label: "h1" },
-              { value: "h2", label: "h2" },
-              { value: "p", label: "p" },
-              { value: "ul", label: "ul" },
-              { value: "ol", label: "ol" },
-              { value: "img", label: "img" },
+              { value: "h1", label: "Заголовок" },
+              { value: "h2", label: "Подзаголовок" },
+              { value: "p", label: "Параграф" },
+              { value: "ul", label: "Список UL" },
+              { value: "ol", label: "Нумерованный список" },
+              { value: "img", label: "Изображение" },
             ]}
-          >
-          </Select>
-          
+          />
 
-          {/* Для списков */}
           {(blockType === "ul" || blockType === "ol") && (
             <div style={{ marginLeft: 20 }}>
               <h6>Элементы списка</h6>
@@ -265,10 +253,11 @@ export default function NewArticlePage() {
                     type="text"
                     placeholder="Текст элемента"
                     value={item}
-                    onChange={(e) => handleListItemChange(idx, e.target.value)}
+                    onChange={(e) =>
+                      handleListItemChange(idx, e.target.value)
+                    }
                     required
                   />
-                  
                 </div>
               ))}
               <Button type="button" onClick={handleAddListItem}>
@@ -277,44 +266,54 @@ export default function NewArticlePage() {
             </div>
           )}
 
-          {/* Для всех остальных */}
-          {blockType && blockType !== "ul" && blockType !== "ol" && (
-            <Textarea
-              placeholder="Содержимое блока"
-              value={blockContent}
-              onChange={(e) => setBlockContent(e.target.value)}
-              required
-            />
-          )}
-
+          {blockType &&
+            blockType !== "ul" &&
+            blockType !== "ol" && (
+              <Textarea
+                placeholder="Содержимое блока"
+                value={blockContent}
+                onChange={(e) => setBlockContent(e.target.value)}
+                required
+              />
+            )}
           <Button
             type="button"
-            disabled={!blockType || ((blockType !== "ul" && !blockContent) || (["ul","ol"].includes(blockType) && listItems.length === 0))}
+            disabled={
+              !blockType ||
+              ((blockType !== "ul" &&
+                blockType !== "ol" &&
+                !blockContent) ||
+                ((blockType === "ul" ||
+                  blockType === "ol") &&
+                  listItems.length === 0))
+            }
             onClick={handleAddBlock}
           >
             Добавить блок
           </Button>
 
+          {mainContent.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <h4>Предпросмотр контента</h4>
+              {mainContent.map((b, i) => (
+                <div key={i}>
+                  <strong>{b.type}:</strong>{" "}
+                  {Array.isArray(b.content)
+                    ? b.content.map((li: any, j: number) => (
+                        <div key={j} style={{ marginLeft: 16 }}>
+                          • {li.content}
+                        </div>
+                      ))
+                    : b.content}
+                </div>
+              ))}
+            </div>
+          )}
+
           <Button type="submit" disabled={loading}>
             Создать статью
           </Button>
         </form>
-
-        {mainContent.length > 0 && (
-          <div style={{ marginTop: 20 }}>
-            <h4>Предпросмотр контента</h4>
-            {mainContent.map((b, i) => (
-              <div key={i}>
-                <strong>{b.type}:</strong>{" "}
-                {Array.isArray(b.content)
-                  ? b.content.map((li: any, j: number) => (
-                      <div key={j} style={{ marginLeft: 16 }}>• {li.content}</div>
-                    ))
-                  : b.content}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </MainLayout>
   );

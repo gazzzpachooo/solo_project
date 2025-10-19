@@ -1,5 +1,5 @@
 import type { ContentBlock } from "../shared/Types/types";
-import React, { type JSX } from "react";
+import { type JSX } from "react";
 
 export function renderBlock(block: ContentBlock, idx: number): JSX.Element {
   switch (block.type) {
