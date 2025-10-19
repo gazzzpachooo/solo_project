@@ -11,7 +11,7 @@ import { api } from "../../api/api";
 import type { RootState } from "../store";
 
 // ----------------------------------------------------------------------------
-// 1) Thunk для создания новой статьи
+// Thunk для создания новой статьи
 export const createArticleThunk = createAsyncThunk<
   Article,
   { creds: Credentials; articleData: ArticleCreate },
@@ -28,7 +28,7 @@ export const createArticleThunk = createAsyncThunk<
 );
 
 // ----------------------------------------------------------------------------
-// 2) Thunk для частичного обновления mainInfo (/changeInfo/{id})
+// Thunk для частичного обновления mainInfo (/changeInfo/{id})
 export const changeInfoThunk = createAsyncThunk<
   Article,
   { creds: Credentials; id: number; newInfo: Partial<MainInfo> },
@@ -45,7 +45,7 @@ export const changeInfoThunk = createAsyncThunk<
 );
 
 // ----------------------------------------------------------------------------
-// 3) Thunk для полного замещения контента (/redoContent/{id})
+// Thunk для полного замещения контента (/redoContent/{id})
 export const redoContentThunk = createAsyncThunk<
   Article,
   { creds: Credentials; id: number; newContent: ContentBlock[] },
@@ -62,7 +62,23 @@ export const redoContentThunk = createAsyncThunk<
 );
 
 // ----------------------------------------------------------------------------
-// 4) Состояние и slice
+// Thunk для добавления контент-блоков в существующую статью (/addContent/{id})
+export const addContentThunk = createAsyncThunk<
+  Article,
+  { creds: Credentials; id: number; newBlocks: ContentBlock[]; position?: number },
+  { rejectValue: string }
+>(
+  "newArticle/addContent",
+  async ({ creds, id, newBlocks, position }, { rejectWithValue }) => {
+    try {
+      return await api.CreatearticlesApi.addContent(creds, id, newBlocks, position);
+    } catch (e: any) {
+      return rejectWithValue(e.message || "Ошибка при добавлении контента");
+    }
+  }
+);
+// ----------------------------------------------------------------------------
+// Состояние и slice
 interface NewArticleState {
   newArticle: Article | null;
   loading: boolean;
@@ -127,7 +143,21 @@ export const newArticleSlice = createSlice({
       .addCase(redoContentThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload ?? "Ошибка при обновлении контента";
-      });
+      })
+
+    // addConten
+      .addCase(addContentThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addContentThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.newArticle = action.payload;
+      })
+      .addCase(addContentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload ?? "Ошибка при добавлении контента";
+      })
   },
 });
 

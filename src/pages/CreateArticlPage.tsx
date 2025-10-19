@@ -1,13 +1,11 @@
 // src/pages/NewArticlePage.tsx
-import { useState, useEffect } from "react";
+import  { useState } from "react";
 import type { FormEvent } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/store";
 import {
   createArticleThunk,
-  changeInfoThunk,
-  redoContentThunk,
   selectNewArticleLoading,
   selectNewArticleError,
 } from "../store/slices/newArticleSlice";
@@ -20,12 +18,11 @@ import type {
   ContentBlock,
   MainInfo,
 } from "../shared/Types/types";
-import { api } from "../api/api";
 import MainLayout from "../layouts/MainLayout";
 import Input from "../shared/ui/Input/Input";
-import Button from "../shared/ui/Button/Button";
 import Textarea from "../shared/ui/Textarea/Textarea";
 import Select from "../shared/ui/Select/Select";
+import Button from "../shared/ui/Button/Button";
 
 interface OtherField {
   key: string;
@@ -35,9 +32,6 @@ interface OtherField {
 export default function NewArticlePage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { articleId } = useParams<{ articleId?: string }>();
-  const isEditMode = Boolean(articleId);
-  const idNum = articleId ? Number(articleId) : undefined;
 
   const isAuth = useSelector(selectIsAuthenticated);
   const { username, password } = useSelector(selectAuth);
@@ -64,51 +58,22 @@ export default function NewArticlePage() {
   const [blockContent, setBlockContent] = useState("");
   const [listItems, setListItems] = useState<string[]>([]);
 
-  // JSON editor for edit mode
-  const [contentJson, setContentJson] = useState("");
-
-  // load article if editing
-  useEffect(() => {
-    if (isEditMode && idNum) {
-      api.CreatearticlesApi.getArticleById(idNum)
-        .then((art) => {
-          setTitle(art.title);
-          setPreviewImg(art.previewImg);
-          setMainInfo(art.mainInfo);
-
-          if (art.mainInfo.other) {
-            const arr = Object.entries(art.mainInfo.other).map(
-              ([key, val]) => ({ key, value: String(val) })
-            );
-            setOtherFields(arr);
-          }
-
-          setContentJson(JSON.stringify(art.mainContent, null, 2));
-        })
-        .catch(() =>
-          alert("Не удалось загрузить данные статьи для редактирования")
-        );
-    }
-  }, [isEditMode, idNum]);
-
   if (!isAuth) {
     return (
       <MainLayout>
         <div style={{ textAlign: "center", marginTop: 40 }}>
           <h2>Доступ запрещён</h2>
-          <p>Чтобы создавать или редактировать статью, войдите в систему.</p>
+          <p>Чтобы создавать статью, войдите в систему.</p>
         </div>
       </MainLayout>
     );
   }
 
   // other-fields handlers
-  const handleAddOther = () => {
+  const handleAddOther = () =>
     setOtherFields([...otherFields, { key: "", value: "" }]);
-  };
-  const handleRemoveOther = (idx: number) => {
+  const handleRemoveOther = (idx: number) =>
     setOtherFields(otherFields.filter((_, i) => i !== idx));
-  };
   const handleOtherChange = (
     idx: number,
     field: keyof OtherField,
@@ -119,10 +84,9 @@ export default function NewArticlePage() {
     setOtherFields(copy);
   };
 
-  // content-block handlers for create mode
-  const handleAddListItem = () => {
+  // content-block handlers
+  const handleAddListItem = () =>
     setListItems([...listItems, ""]);
-  };
   const handleListItemChange = (idx: number, val: string) => {
     const copy = [...listItems];
     copy[idx] = val;
@@ -154,70 +118,30 @@ export default function NewArticlePage() {
       other: Object.keys(otherObj).length ? otherObj : undefined,
     };
 
-    // determine content to send
-    let contentToSend: ContentBlock[];
-    if (isEditMode) {
-      try {
-        contentToSend = JSON.parse(contentJson) as ContentBlock[];
-      } catch {
-        alert("Неверный формат JSON в контенте статьи");
-        return;
-      }
-    } else {
-      contentToSend = mainContent;
-    }
-
     const articleData: ArticleCreate = {
       title,
       previewImg,
       mainInfo: fullInfo,
-      mainContent: contentToSend,
+      mainContent,
     };
 
     try {
-      if (isEditMode && idNum) {
-        // update mainInfo
-        await dispatch(
-          changeInfoThunk({
-            creds: { username, password },
-            id: idNum,
-            newInfo: fullInfo,
-          })
-        ).unwrap();
-
-        // update content
-        const updated = await dispatch(
-          redoContentThunk({
-            creds: { username, password },
-            id: idNum,
-            newContent: contentToSend,
-          })
-        ).unwrap();
-
-        navigate(`/article/${updated.id}`);
-      } else {
-        // create new article
-        const created = await dispatch(
-          createArticleThunk({
-            creds: { username, password },
-            articleData,
-          })
-        ).unwrap();
-        navigate(`/article/${created.id}`);
-      }
+      const created = await dispatch(
+        createArticleThunk({
+          creds: { username, password },
+          articleData,
+        })
+      ).unwrap();
+      navigate(`/article/${created.id}`);
     } catch {
-      alert(
-        isEditMode
-          ? "Не удалось сохранить изменения"
-          : "Не удалось создать статью"
-      );
+      alert("Не удалось создать статью");
     }
   };
 
   return (
     <MainLayout>
       <div style={{ maxWidth: 700, margin: "40px auto" }}>
-        <h2>{isEditMode ? "Редактировать статью" : "Создать новую статью"}</h2>
+        <h2>Создать новую статью</h2>
         {error && <p style={{ color: "red" }}>{error}</p>}
         {loading && <p>Загрузка...</p>}
 
@@ -291,7 +215,10 @@ export default function NewArticlePage() {
                 }
                 required
               />
-              <Button type="button" onClick={() => handleRemoveOther(i)}>
+              <Button
+                type="button"
+                onClick={() => handleRemoveOther(i)}
+              >
                 Удалить
               </Button>
             </div>
@@ -300,100 +227,91 @@ export default function NewArticlePage() {
             Добавить поле other
           </Button>
 
-          {isEditMode ? (
-            <>
-              <h4>Редактирование контента (JSON)</h4>
-              <Textarea
-                value={contentJson}
-                onChange={(e) => setContentJson(e.target.value)}
-                placeholder="Массив блоков в JSON"
-              />
-            </>
-          ) : (
-            <>
-              <h4>Добавить блок контента</h4>
-              <Select
-                value={blockType}
-                onChange={(val) => setBlockType(val)}
-                required
-                options={[
-                  { value: "", label: "Выберите тип" },
-                  { value: "h1", label: "Заголовок" },
-                  { value: "h2", label: "Подзаголовок" },
-                  { value: "p", label: "Параграф" },
-                  { value: "ul", label: "Список" },
-                  { value: "ol", label: "Нумерованный список" },
-                  { value: "img", label: "Изображение" },
-                ]}
-              />
-              {(blockType === "ul" || blockType === "ol") && (
-                <div style={{ marginLeft: 20 }}>
-                  <h6>Элементы списка</h6>
-                  {listItems.map((item, idx) => (
-                    <div key={idx} style={{ display: "flex", gap: 8 }}>
-                      <Input
-                        type="text"
-                        placeholder="Текст элемента"
-                        value={item}
-                        onChange={(e) =>
-                          handleListItemChange(idx, e.target.value)
-                        }
-                        required
-                      />
-                    </div>
-                  ))}
-                  <Button type="button" onClick={handleAddListItem}>
-                    Добавить элемент списка
-                  </Button>
-                </div>
-              )}
-              {blockType &&
-                blockType !== "ul" &&
-                blockType !== "ol" && (
-                  <Textarea
-                    placeholder="Содержимое блока"
-                    value={blockContent}
-                    onChange={(e) => setBlockContent(e.target.value)}
+          {/* Добавление блоков контента */}
+          <h4>Добавить блок контента</h4>
+          <Select
+            value={blockType}
+            onChange={(val) => setBlockType(val)}
+            required
+            options={[
+              { value: "", label: "Выберите тип" },
+              { value: "h1", label: "Заголовок" },
+              { value: "h2", label: "Подзаголовок" },
+              { value: "p", label: "Параграф" },
+              { value: "ul", label: "Список UL" },
+              { value: "ol", label: "Нумерованный список" },
+              { value: "img", label: "Изображение" },
+            ]}
+          />
+
+          {(blockType === "ul" || blockType === "ol") && (
+            <div style={{ marginLeft: 20 }}>
+              <h6>Элементы списка</h6>
+              {listItems.map((item, idx) => (
+                <div key={idx} style={{ display: "flex", gap: 8 }}>
+                  <Input
+                    type="text"
+                    placeholder="Текст элемента"
+                    value={item}
+                    onChange={(e) =>
+                      handleListItemChange(idx, e.target.value)
+                    }
                     required
                   />
-                )}
-              <Button
-                type="button"
-                disabled={
-                  !blockType ||
-                  ((blockType !== "ul" &&
-                    blockType !== "ol" &&
-                    !blockContent) ||
-                    (["ul", "ol"].includes(blockType) &&
-                      listItems.length === 0))
-                }
-                onClick={handleAddBlock}
-              >
-                Добавить блок
-              </Button>
-
-              {mainContent.length > 0 && (
-                <div style={{ marginTop: 20 }}>
-                  <h4>Предпросмотр контента</h4>
-                  {mainContent.map((b, i) => (
-                    <div key={i}>
-                      <strong>{b.type}:</strong>{" "}
-                      {Array.isArray(b.content)
-                        ? b.content.map((li: any, j: number) => (
-                            <div key={j} style={{ marginLeft: 16 }}>
-                              • {li.content}
-                            </div>
-                          ))
-                        : b.content}
-                    </div>
-                  ))}
                 </div>
-              )}
-            </>
+              ))}
+              <Button type="button" onClick={handleAddListItem}>
+                Добавить элемент списка
+              </Button>
+            </div>
+          )}
+
+          {blockType &&
+            blockType !== "ul" &&
+            blockType !== "ol" && (
+              <Textarea
+                placeholder="Содержимое блока"
+                value={blockContent}
+                onChange={(e) => setBlockContent(e.target.value)}
+                required
+              />
+            )}
+          <Button
+            type="button"
+            disabled={
+              !blockType ||
+              ((blockType !== "ul" &&
+                blockType !== "ol" &&
+                !blockContent) ||
+                ((blockType === "ul" ||
+                  blockType === "ol") &&
+                  listItems.length === 0))
+            }
+            onClick={handleAddBlock}
+          >
+            Добавить блок
+          </Button>
+
+          {mainContent.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <h4>Предпросмотр контента</h4>
+              {mainContent.map((b, i) => (
+                <div key={i}>
+                  <strong>{b.type}:</strong>{" "}
+                  {Array.isArray(b.content)
+                    ? b.content.map((li: any, j: number) => (
+                        <div key={j} style={{ marginLeft: 16 }}>
+                          • {li.content}
+                        </div>
+                      ))
+                    : b.content}
+                </div>
+              ))}
+            </div>
           )}
 
           <Button type="submit" disabled={loading}>
-            {isEditMode ? "Сохранить изменения" : "Создать статью"}
+            Создать статью
           </Button>
         </form>
       </div>

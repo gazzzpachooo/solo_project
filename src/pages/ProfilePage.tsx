@@ -100,7 +100,7 @@ export default function ProfilePage() {
   };
 
   const handleEdit = (id: number) => {
-    navigate(`/newArticle/${id}`);
+    navigate(`/article/${id}`);
   };
 
   // сабмит формы редактирования профиля

@@ -22,15 +22,15 @@ export default function ArticlesPage() {
   const loading = useSelector(selectArticlesLoading);
   const error = useSelector(selectArticlesError);
 
-  // 1) Стейт поискового запроса
+  // Стейт поискового запроса
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 2) Загрузка статей при монтировании
+  // Загрузка статей при монтировании
   useEffect(() => {
     dispatch(fetchArticles());
   }, [dispatch]);
 
-  // 3) Фильтрация – case-insensitive по заголовку
+  // Фильтрация – case-insensitive по заголовку
   const filteredArticles = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return articles;

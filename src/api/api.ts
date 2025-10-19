@@ -8,7 +8,7 @@ import type {
   MainInfo,
   ContentBlock
 } from '../shared/Types/types';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+
 
 const API_URL = 'http://localhost:8000';
 const axios_api = axios.create({ baseURL: API_URL });
@@ -68,6 +68,24 @@ export const articlesApi = {
 
 // === My Articles / CRUD ====================================================
 export const CreatearticlesApi = {
+
+  addContent: async (
+  creds: Credentials,
+  id: number,
+  newBlocks: ContentBlock[],
+  position?: number
+): Promise<Article> => {
+  const res = await axios_api.put<Article>(
+    `/addContent/${id}`,
+    newBlocks,
+    {
+      auth: { username: creds.username, password: creds.password },
+      params: { position },
+    }
+  );
+  return res.data;
+},
+
   getMyArticles: async (creds: Credentials): Promise<ArticleShort[]> => {
     const res = await axios_api.get<ArticleShort[]>('/myArticles', {
       auth: { username: creds.username, password: creds.password }
@@ -154,36 +172,6 @@ export const CreatearticlesApi = {
   }
 };
 
-// === Redux Thunks для редактирования статьи ================================
-export const changeInfoThunk = createAsyncThunk<
-  Article,
-  { id: number; creds: Credentials; newInfo: Partial<MainInfo> },
-  { rejectValue: string }
->(
-  'newArticle/changeInfo',
-  async ({ id, creds, newInfo }, { rejectWithValue }) => {
-    try {
-      return await CreatearticlesApi.changeInfo(creds, id, newInfo);
-    } catch (e: any) {
-      return rejectWithValue(e.message);
-    }
-  }
-);
-
-export const redoContentThunk = createAsyncThunk<
-  Article,
-  { id: number; creds: Credentials; newContent: ContentBlock[] },
-  { rejectValue: string }
->(
-  'newArticle/redoContent',
-  async ({ id, creds, newContent }, { rejectWithValue }) => {
-    try {
-      return await CreatearticlesApi.redoContent(creds, id, newContent);
-    } catch (e: any) {
-      return rejectWithValue(e.message);
-    }
-  }
-);
 
 // === Экспорт всего API-пакета ==============================================
 export const api = {
