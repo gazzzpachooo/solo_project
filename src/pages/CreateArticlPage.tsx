@@ -1,4 +1,3 @@
-// src/pages/NewArticlePage.tsx
 import  { useState } from "react";
 import type { FormEvent } from "react";
 import { useSelector } from "react-redux";

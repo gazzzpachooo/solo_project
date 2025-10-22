@@ -1,4 +1,3 @@
-// src/pages/HomePage.tsx
 import MainLayout from "../layouts/MainLayout";
 import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
